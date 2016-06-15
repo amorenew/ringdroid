@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "com.ringdroid"
+        applicationId "com.cutebird"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 20703

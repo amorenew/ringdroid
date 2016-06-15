@@ -20,9 +20,9 @@
 -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.ringdroid"
-          android:versionName="2.7.3"
-          android:versionCode="20703">
+    package="com.cutebird"
+    android:versionCode="20703"
+    android:versionName="2.7.3">
 
     <uses-sdk android:minSdkVersion="16"
               android:targetSdkVersion="22"/>
@@ -35,15 +35,17 @@
 
     <supports-screens android:anyDensity="true" />
 
-    <application android:label="@string/ringdroid_app_name"
+    <application
+        android:allowBackup="true"
                  android:icon="@drawable/ringdroidlogo"
-                 android:theme="@android:style/Theme.Holo"
+        android:label="@string/ringdroid_app_name"
                  android:largeHeap="true"
-                 android:allowBackup="true">
+        android:theme="@android:style/Theme.Holo">
 
 
         <!-- Main activity that's launched when the user opens Ringdroid. -->
-        <activity android:name="RingdroidSelectActivity"
+        <activity
+            android:name="com.cutebird.RingdroidSelectActivity"
                   android:label="@string/main_activity_label">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -64,10 +66,11 @@
              Controls viewing the waveform, setting the start and end
              positions, playback, and triggering saving of the output
              file. -->
-        <activity android:name="RingdroidEditActivity"
+        <activity
+            android:name="com.cutebird.RingdroidEditActivity"
                   android:configChanges="orientation|screenSize|keyboardHidden"
-                  android:windowSoftInputMode="adjustResize"
-                  android:hardwareAccelerated="true">
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter android:label="@string/edit_intent">
                 <action android:name="android.intent.action.EDIT" />
                 <data android:mimeType="audio/*" />
@@ -75,7 +78,8 @@
         </activity>
 
 	<!-- Activity for choosing a contact to assign a ringtone to. -->
-        <activity android:name="ChooseContactActivity"
+        <activity
+            android:name="com.cutebird.ChooseContactActivity"
                   android:configChanges="orientation|keyboardHidden">
         </activity>
 
