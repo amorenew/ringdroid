@@ -1249,6 +1249,9 @@ public class RingdroidEditActivity extends BaseViewController
             case FileSaveDialog.FILE_KIND_RINGTONE:
                 subdir = "media/audio/ringtones/";
                 break;
+            case FileSaveDialog.FILE_KIND_LETTER:
+                subdir = getApplicationContext().getFilesDir().getAbsolutePath();
+                break;
         }
         String parentdir = externalRootDir + subdir;
 
@@ -1597,6 +1600,8 @@ public class RingdroidEditActivity extends BaseViewController
                 mNewFileKind == FileSaveDialog.FILE_KIND_ALARM);
         values.put(MediaStore.Audio.Media.IS_MUSIC,
                 mNewFileKind == FileSaveDialog.FILE_KIND_MUSIC);
+        values.put(MediaStore.Audio.Media.IS_MUSIC,
+                mNewFileKind == FileSaveDialog.FILE_KIND_LETTER);
 
         // Insert it into the database
         Uri uri = MediaStore.Audio.Media.getContentUriForPath(outPath);
@@ -1611,7 +1616,7 @@ public class RingdroidEditActivity extends BaseViewController
 
         // There's nothing more to do with music or an alarm.  Show a
         // success message and then quit.
-        if (mNewFileKind == FileSaveDialog.FILE_KIND_MUSIC ||
+        if (mNewFileKind == FileSaveDialog.FILE_KIND_MUSIC || mNewFileKind == FileSaveDialog.FILE_KIND_LETTER ||
                 mNewFileKind == FileSaveDialog.FILE_KIND_ALARM) {
             Toast.makeText(this,
                     R.string.save_success_message,
