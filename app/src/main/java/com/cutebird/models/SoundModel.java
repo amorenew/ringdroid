@@ -57,7 +57,6 @@ public class SoundModel extends BaseModel {
     public List<SoundModel> getSoundModels() {
         List<SoundModel> models = SQLite.select().from(SoundModel.class).queryList();
         return models;
-
     }
 
 

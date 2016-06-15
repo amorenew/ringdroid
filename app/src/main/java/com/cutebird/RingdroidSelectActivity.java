@@ -30,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.cutebird.models.LetterModel;
 import com.cutebird.models.SoundModel;
 import com.cutebird.viewcontrollers.BaseViewController;
 import com.cutebird.views.RecyclerItemClickListener;
@@ -65,7 +66,7 @@ public class RingdroidSelectActivity extends BaseViewController {
         SoundModel soundModel2 = new SoundModel();
         soundModel2.setName("B");
         SoundModel soundModel3 = new SoundModel();
-        soundModel3.setName("C");
+        soundModel3.setName(LetterModel.getInstance().getLetterModels().get(0).getName());
         soundModels.add(soundModel);
         soundModels.add(soundModel2);
         soundModels.add(soundModel3);

@@ -40,6 +40,7 @@
                  android:icon="@drawable/ringdroidlogo"
         android:label="@string/ringdroid_app_name"
                  android:largeHeap="true"
+        android:name=".App"
         android:theme="@style/AppTheme">
 
 

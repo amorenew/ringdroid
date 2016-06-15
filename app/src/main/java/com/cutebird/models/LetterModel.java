@@ -4,7 +4,10 @@ import com.cutebird.database.SoundDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.BaseModel;
+
+import java.util.List;
 
 /**
  * Created by TCIG_PC_54 on 6/15/2016.
@@ -58,5 +61,10 @@ public class LetterModel extends BaseModel {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<LetterModel> getLetterModels() {
+        List<LetterModel> models = SQLite.select().from(LetterModel.class).queryList();
+        return models;
     }
 }
