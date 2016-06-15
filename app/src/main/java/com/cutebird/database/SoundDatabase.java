@@ -12,7 +12,7 @@ import com.raizlabs.android.dbflow.annotation.Database;
 @Database(name = SoundDatabase.NAME, version = SoundDatabase.VERSION)
 public class SoundDatabase {
     //database name without .db or .sqlite
-    public static final String NAME = "Sounds";
+    public static final String NAME = "SoundDatabase";
     //database version number
     public static final int VERSION = 1;
 
