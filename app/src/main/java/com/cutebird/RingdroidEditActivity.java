@@ -46,7 +46,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cutebird.models.LetterModel;
 import com.cutebird.soundfile.SoundFile;
+import com.cutebird.viewcontrollers.BaseViewController;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -58,7 +60,7 @@ import java.io.StringWriter;
  * the waveform display, current horizontal offset, marker handles,
  * start / end text boxes, and handles all of the buttons and controls.
  */
-public class RingdroidEditActivity extends Activity
+public class RingdroidEditActivity extends BaseViewController
         implements MarkerView.MarkerListener,
         WaveformView.WaveformListener {
     /**
@@ -79,6 +81,7 @@ public class RingdroidEditActivity extends Activity
     private SoundFile mSoundFile;
     private File mFile;
     private String mFilename;
+    private LetterModel letterModel;
     private String mArtist;
     private String mTitle;
     private int mNewFileKind;
@@ -273,6 +276,7 @@ public class RingdroidEditActivity extends Activity
         mWasGetContentIntent = intent.getBooleanExtra("was_get_content_intent", false);
 
         mFilename = intent.getData().toString().replaceFirst("file://", "").replaceAll("%20", " ");
+        letterModel = intent.getParcelableExtra(LetterModel.class.getSimpleName());
         mSoundFile = null;
         mKeyDown = false;
 
@@ -592,7 +596,6 @@ public class RingdroidEditActivity extends Activity
             if (mEndPos > mMaxPos)
                 mEndPos = mMaxPos;
 
-            setOffsetGoalEnd();
         }
 
         updateDisplay();
@@ -631,6 +634,8 @@ public class RingdroidEditActivity extends Activity
     private void loadGui() {
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.editor);
+        addNavigationDrawer();
+        setTitle("Record Letter");
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -1222,7 +1227,7 @@ public class RingdroidEditActivity extends Activity
         showFinalAlert(e, getResources().getText(messageResourceId));
     }
 
-    private String makeRingtoneFilename(CharSequence title, String extension) {
+    private String makeRingtoneFilename(String title, String extension) {
         String subdir;
         String externalRootDir = Environment.getExternalStorageDirectory().getPath();
         if (!externalRootDir.endsWith("/")) {
@@ -1287,7 +1292,7 @@ public class RingdroidEditActivity extends Activity
         return path;
     }
 
-    private void saveRingtone(final CharSequence title) {
+    private void saveRingtone(final String title) {
         double startTime = mWaveformView.pixelsToSeconds(mStartPos);
         double endTime = mWaveformView.pixelsToSeconds(mEndPos);
         final int startFrame = mWaveformView.secondsToFrames(startTime);
@@ -1382,6 +1387,121 @@ public class RingdroidEditActivity extends Activity
                         return;
                     }
                 }
+
+                // Try to load the new file to make sure it worked
+                try {
+                    final SoundFile.ProgressListener listener =
+                            new SoundFile.ProgressListener() {
+                                public boolean reportProgress(double frac) {
+                                    // Do nothing - we're not going to try to
+                                    // estimate when reloading a saved sound
+                                    // since it's usually fast, but hard to
+                                    // estimate anyway.
+                                    return true;  // Keep going
+                                }
+                            };
+                    SoundFile.create(outPath, listener);
+                } catch (final Exception e) {
+                    mProgressDialog.dismiss();
+                    e.printStackTrace();
+                    mInfoContent = e.toString();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            mInfo.setText(mInfoContent);
+                        }
+                    });
+
+                    Runnable runnable = new Runnable() {
+                        public void run() {
+                            showFinalAlert(e, getResources().getText(R.string.write_error));
+                        }
+                    };
+                    mHandler.post(runnable);
+                    return;
+                }
+
+                mProgressDialog.dismiss();
+
+                final String finalOutPath = outPath;
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        afterSavingRingtone(title,
+                                finalOutPath,
+                                duration);
+                    }
+                };
+                mHandler.post(runnable);
+            }
+        };
+        mSaveSoundFileThread.start();
+    }
+
+    private void saveLetterSound(final String title) {
+        double startTime = mWaveformView.pixelsToSeconds(mStartPos);
+        double endTime = mWaveformView.pixelsToSeconds(mEndPos);
+        final int startFrame = mWaveformView.secondsToFrames(startTime);
+        final int endFrame = mWaveformView.secondsToFrames(endTime);
+        final int duration = (int) (endTime - startTime + 0.5);
+
+        // Create an indeterminate progress dialog
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        mProgressDialog.setTitle(R.string.progress_dialog_saving);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.show();
+
+        // Save the sound file in a background thread
+        mSaveSoundFileThread = new Thread() {
+            public void run() {
+                // Try AAC first.
+                String outPath = makeRingtoneFilename(title, ".wav");
+                if (outPath == null) {
+                    Runnable runnable = new Runnable() {
+                        public void run() {
+                            showFinalAlert(new Exception(), R.string.no_unique_filename);
+                        }
+                    };
+                    mHandler.post(runnable);
+                    return;
+                }
+                File outFile = new File(outPath);
+                try {
+                    // create the .wav file
+                    mSoundFile.WriteWAVFile(outFile, startFrame, endFrame - startFrame);
+                } catch (Exception e) {
+                    // Creating the .wav file also failed. Stop the progress dialog, show an
+                    // error message and exit.
+                    mProgressDialog.dismiss();
+                    if (outFile.exists()) {
+                        outFile.delete();
+                    }
+                    mInfoContent = e.toString();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            mInfo.setText(mInfoContent);
+                        }
+                    });
+
+                    CharSequence errorMessage;
+                    if (e.getMessage() != null
+                            && e.getMessage().equals("No space left on device")) {
+                        errorMessage = getResources().getText(R.string.no_space_error);
+                        e = null;
+                    } else {
+                        errorMessage = getResources().getText(R.string.write_error);
+                    }
+                    final CharSequence finalErrorMessage = errorMessage;
+                    final Exception finalException = e;
+                    Runnable runnable = new Runnable() {
+                        public void run() {
+                            showFinalAlert(finalException, finalErrorMessage);
+                        }
+                    };
+                    mHandler.post(runnable);
+                    return;
+                }
+
 
                 // Try to load the new file to make sure it worked
                 try {
@@ -1585,7 +1705,7 @@ public class RingdroidEditActivity extends Activity
 
         final Handler handler = new Handler() {
             public void handleMessage(Message response) {
-                CharSequence newTitle = (CharSequence) response.obj;
+                String newTitle = (String) response.obj;
                 mNewFileKind = response.arg1;
                 saveRingtone(newTitle);
             }

@@ -31,11 +31,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.cutebird.models.LetterModel;
-import com.cutebird.models.SoundModel;
 import com.cutebird.viewcontrollers.BaseViewController;
 import com.cutebird.views.RecyclerItemClickListener;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main screen that shows up when you launch Ringdroid. Handles selecting
@@ -46,6 +45,7 @@ public class RingdroidSelectActivity extends BaseViewController {
     // Result codes
     private static final int REQUEST_CODE_EDIT = 1;
     private RecyclerView rvSounds;
+    private List<LetterModel> letterModels;
 
     /**
      * Called when the activity is first created.
@@ -60,24 +60,15 @@ public class RingdroidSelectActivity extends BaseViewController {
         rvSounds.setLayoutManager(mLayoutManager);
         rvSounds.setItemAnimator(new DefaultItemAnimator());
 
-        final ArrayList<SoundModel> soundModels = new ArrayList<>();
-        SoundModel soundModel = new SoundModel();
-        soundModel.setName("A");
-        SoundModel soundModel2 = new SoundModel();
-        soundModel2.setName("B");
-        SoundModel soundModel3 = new SoundModel();
-        soundModel3.setName(LetterModel.getInstance().getLetterModels().get(0).getName());
-        soundModels.add(soundModel);
-        soundModels.add(soundModel2);
-        soundModels.add(soundModel3);
-        SoundDataAdapter dataAdapter = new SoundDataAdapter(this, soundModels);
+        letterModels = LetterModel.getInstance().getLetterModels();
+        LetterAdapter dataAdapter = new LetterAdapter(this, letterModels);
         rvSounds.setAdapter(dataAdapter);
         //handle recycler view on item click
         rvSounds.addOnItemTouchListener(
                 new RecyclerItemClickListener(RingdroidSelectActivity.this, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        Toast.makeText(getApplicationContext(), soundModels.get(position).getName(), Toast.LENGTH_LONG).show();
+                        recordLetter(letterModels.get(position));
                     }
                 })
         );
@@ -158,10 +149,20 @@ public class RingdroidSelectActivity extends BaseViewController {
             Intent intent = new Intent(Intent.ACTION_EDIT, Uri.parse("record"));
             // intent.putExtra("was_get_content_intent", mWasGetContentIntent);
             intent.setClassName("com.cutebird", "com.cutebird.RingdroidEditActivity");
+            // intent.putExtra(LetterModel.class.getSimpleName(),)
             startActivityForResult(intent, REQUEST_CODE_EDIT);
         } catch (Exception e) {
             Log.e("Ringdroid", "Couldn't start editor");
         }
+    }
+
+    private void recordLetter(LetterModel letterModel) {
+        Intent intent = new Intent(Intent.ACTION_EDIT, Uri.parse("record"));
+        // intent.putExtra("was_get_content_intent", mWasGetContentIntent);
+        intent.setClassName("com.cutebird", "com.cutebird.RingdroidEditActivity");
+        intent.putExtra(LetterModel.class.getSimpleName(), letterModel);
+        startActivityForResult(intent, REQUEST_CODE_EDIT);
+
     }
 
     private void startRingdroidEditor() {

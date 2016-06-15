@@ -8,20 +8,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cutebird.models.SoundModel;
+import com.cutebird.models.LetterModel;
 
 import java.util.List;
 
 /**
  * Created by islam on 3/29/16.
  */
-public class SoundDataAdapter extends RecyclerView.Adapter<SoundDataAdapter.MyViewHolder> {
-    private List<SoundModel> soundModels;
+public class LetterAdapter extends RecyclerView.Adapter<LetterAdapter.MyViewHolder> {
+    private List<LetterModel> letterModels;
     private Context context;
 
-    public SoundDataAdapter(Context context, List<SoundModel> soundModels) {
+    public LetterAdapter(Context context, List<LetterModel> letterModels) {
         this.context = context;
-        this.soundModels = soundModels;
+        this.letterModels = letterModels;
     }
 
     @Override
@@ -33,13 +33,13 @@ public class SoundDataAdapter extends RecyclerView.Adapter<SoundDataAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        SoundModel dataModel = soundModels.get(position);
-        holder.tvTitle.setText(dataModel.getName());
+        LetterModel letterModel = letterModels.get(position);
+        holder.tvTitle.setText(letterModel.getDescription());
     }
 
     @Override
     public int getItemCount() {
-        return this.soundModels.size();
+        return letterModels.size();
     }
 
 

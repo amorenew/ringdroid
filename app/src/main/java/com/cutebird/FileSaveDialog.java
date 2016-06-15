@@ -38,6 +38,7 @@ public class FileSaveDialog extends Dialog {
     public static final int FILE_KIND_ALARM = 1;
     public static final int FILE_KIND_NOTIFICATION = 2;
     public static final int FILE_KIND_RINGTONE = 3;
+    public static final int FILE_KIND_LETTER = 4;
 
     private Spinner mTypeSpinner;
     private EditText mFilename;
@@ -75,6 +76,7 @@ public class FileSaveDialog extends Dialog {
         mTypeArray.add(resources.getString(R.string.type_alarm));
         mTypeArray.add(resources.getString(R.string.type_notification));
         mTypeArray.add(resources.getString(R.string.type_ringtone));
+        mTypeArray.add("Letter");
 
         mFilename = (EditText) findViewById(R.id.filename);
         mOriginalName = originalName;
@@ -126,6 +128,9 @@ public class FileSaveDialog extends Dialog {
                 return "Notification";
             case FILE_KIND_RINGTONE:
                 return "Ringtone";
+            case FILE_KIND_LETTER:
+                return "Letter";
+
         }
     }
 
