@@ -1,4 +1,4 @@
-package com.cutebird;
+package com.cutebird.database;
 
 import com.raizlabs.android.dbflow.annotation.Database;
 
@@ -12,7 +12,7 @@ import com.raizlabs.android.dbflow.annotation.Database;
 @Database(name = SoundDatabase.NAME, version = SoundDatabase.VERSION)
 public class SoundDatabase {
     //database name without .db or .sqlite
-    public static final String NAME = "SoundDatabase";
+    public static final String NAME = "Sounds";
     //database version number
     public static final int VERSION = 1;
 

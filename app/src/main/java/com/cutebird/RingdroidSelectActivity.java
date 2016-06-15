@@ -21,12 +21,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.cutebird.models.SoundModel;
 import com.cutebird.viewcontrollers.BaseViewController;
+import com.cutebird.views.RecyclerItemClickListener;
+
+import java.util.ArrayList;
 
 /**
  * Main screen that shows up when you launch Ringdroid. Handles selecting
@@ -36,6 +44,7 @@ import com.cutebird.viewcontrollers.BaseViewController;
 public class RingdroidSelectActivity extends BaseViewController {
     // Result codes
     private static final int REQUEST_CODE_EDIT = 1;
+    private RecyclerView rvSounds;
 
     /**
      * Called when the activity is first created.
@@ -45,6 +54,32 @@ public class RingdroidSelectActivity extends BaseViewController {
         super.onCreate(icicle);
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.media_select);
+        rvSounds = (RecyclerView) findViewById(R.id.rvSounds);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        rvSounds.setLayoutManager(mLayoutManager);
+        rvSounds.setItemAnimator(new DefaultItemAnimator());
+
+        final ArrayList<SoundModel> soundModels = new ArrayList<>();
+        SoundModel soundModel = new SoundModel();
+        soundModel.setName("A");
+        SoundModel soundModel2 = new SoundModel();
+        soundModel2.setName("B");
+        SoundModel soundModel3 = new SoundModel();
+        soundModel3.setName("C");
+        soundModels.add(soundModel);
+        soundModels.add(soundModel2);
+        soundModels.add(soundModel3);
+        SoundDataAdapter dataAdapter = new SoundDataAdapter(this, soundModels);
+        rvSounds.setAdapter(dataAdapter);
+        //handle recycler view on item click
+        rvSounds.addOnItemTouchListener(
+                new RecyclerItemClickListener(RingdroidSelectActivity.this, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        Toast.makeText(getApplicationContext(), soundModels.get(position).getName(), Toast.LENGTH_LONG).show();
+                    }
+                })
+        );
         addNavigationDrawer();
         setTitle(R.string.main);
         setMenuIndex(R.string.main);

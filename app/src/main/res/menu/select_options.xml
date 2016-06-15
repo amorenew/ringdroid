@@ -7,7 +7,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/action_edit_record"
-        android:icon="@drawable/common_ic_googleplayservices"
+        android:icon="@drawable/type_music"
         android:title="@string/edit_intent"
         app:showAsAction="always" />
 

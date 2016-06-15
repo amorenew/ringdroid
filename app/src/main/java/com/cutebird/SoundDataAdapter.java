@@ -8,42 +8,38 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.cutebird.models.SoundModel;
+
 import java.util.List;
 
 /**
  * Created by islam on 3/29/16.
  */
 public class SoundDataAdapter extends RecyclerView.Adapter<SoundDataAdapter.MyViewHolder> {
-    private List<SoundDataModel> soundDataModels;
+    private List<SoundModel> soundModels;
     private Context context;
 
-    public SoundDataAdapter(List<SoundDataModel> soundDataModels, Context context) {
-        this.soundDataModels = soundDataModels;
+    public SoundDataAdapter(Context context, List<SoundModel> soundModels) {
         this.context = context;
+        this.soundModels = soundModels;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.media_select_row, parent, false);
-
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        SoundDataModel dataModel = soundDataModels.get(position);
-    /*    holder.tvDate.setText(forecastday.getDate());
-        holder.tvDegreeHigh.setText(forecastday.getDegreeHigh());
-        holder.tvCondition.setText(forecastday.getCondition());
-        //load image from url and set it in image view
-        Util.getInstance().loadImage(context, holder.ivForecast, forecastday.getImageLink(), R.drawable.error_image);
-*/
+        SoundModel dataModel = soundModels.get(position);
+        holder.tvTitle.setText(dataModel.getName());
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return this.soundModels.size();
     }
 
 
