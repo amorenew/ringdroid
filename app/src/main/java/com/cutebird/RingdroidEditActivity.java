@@ -1228,7 +1228,7 @@ public class RingdroidEditActivity extends BaseViewController
     }
 
     private String makeRingtoneFilename(String title, String extension) {
-        String subdir;
+        String subdir = "";
         String externalRootDir = Environment.getExternalStorageDirectory().getPath();
         if (!externalRootDir.endsWith("/")) {
             externalRootDir += "/";
@@ -1254,6 +1254,9 @@ public class RingdroidEditActivity extends BaseViewController
                 break;
         }
         String parentdir = externalRootDir + subdir;
+        if (mNewFileKind == FileSaveDialog.FILE_KIND_LETTER) {
+            parentdir = getApplicationContext().getFilesDir().getAbsolutePath() + "/amrletter/";
+        }
 
         // Create the parent directory
         File parentDirFile = new File(parentdir);
@@ -1707,18 +1710,22 @@ public class RingdroidEditActivity extends BaseViewController
         if (mIsPlaying) {
             handlePause();
         }
-
+        mTitle = letterModel.getName();
         final Handler handler = new Handler() {
             public void handleMessage(Message response) {
                 String newTitle = (String) response.obj;
                 mNewFileKind = response.arg1;
-                saveRingtone(newTitle);
+                saveLetterSound(newTitle);
+                //  saveRingtone(newTitle);
             }
         };
         Message message = Message.obtain(handler);
-        FileSaveDialog dlog = new FileSaveDialog(
-                this, getResources(), mTitle, message);
-        dlog.show();
+        message.obj = letterModel.getName();
+        message.arg1 = FileSaveDialog.FILE_KIND_LETTER;
+        message.sendToTarget();
+//        FileSaveDialog dlog = new FileSaveDialog(
+//                this, getResources(), mTitle, message);
+//        dlog.show();
     }
 
     private long getCurrentTime() {

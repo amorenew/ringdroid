@@ -691,6 +691,7 @@ public class SoundFile {
             }
             outputStream.write(buffer, 0, numBytesLeft);
         }
+        outputStream.flush();
         outputStream.close();
     }
 
